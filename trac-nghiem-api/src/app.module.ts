@@ -14,8 +14,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: 'TracNghiem',
       entities: [], // Danh sách các entity sẽ ánh xạ
       synchronize: true, // Tự động tạo bảng từ entity (trong development)
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
-  ],
+  ], 
   controllers: [AppController],
   providers: [AppService],
 })
