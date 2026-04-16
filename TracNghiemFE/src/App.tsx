@@ -1,11 +1,7 @@
-import "./App.css";
+import "./index.css";
 
 function App() {
-  return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
-  );
+  return <div className="bg-green-500 text-white p-10">TEST TAILWIND</div>;
 }
 
 export default App;
