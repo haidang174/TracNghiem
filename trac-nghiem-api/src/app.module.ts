@@ -1,24 +1,22 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+
+import { databaseConfig } from './config/database.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'gateway01.ap-northeast-1.prod.aws.tidbcloud.com',
-      port: 4000,
-      username: '2k573cTqtncSS2K.root',
-      password: 'p6pgN88fvWMx8uUd',
-      database: 'TracNghiem',
-      entities: [], // Danh sách các entity sẽ ánh xạ
-      synchronize: true, // Tự động tạo bảng từ entity (trong development)
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    }),
-  ], 
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot(databaseConfig),
+
+    AuthModule,
+    UsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
