@@ -1,7 +1,7 @@
-import "./index.css";
+import AppRouter from "./router";
 
 function App() {
-  return <div className="bg-green-500 text-white p-10">TEST TAILWIND</div>;
+  return <AppRouter />;
 }
 
 export default App;

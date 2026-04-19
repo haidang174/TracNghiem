@@ -23,8 +23,8 @@ interface LoginResponse {
 }
 
 interface ChangePasswordRequest {
-  old_password: string;
-  new_password: string;
+  currentPassword: string;
+  newPassword: string;
 }
 
 // Đăng nhập
