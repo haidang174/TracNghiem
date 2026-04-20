@@ -19,19 +19,19 @@ export class AuthService {
       throw new UnauthorizedException('Tên đăng nhập hoặc mật khẩu không đúng');
     }
 
-    const payload = { sub: user.id, username: user.username, role: user.role };
+      const payload = { sub: user.id, username: user.username, role: user.role, fullname: user.fullName };
 
-    return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: jwtConfig.secret,
-        expiresIn: jwtConfig.expiresIn,
-      }),
-      user: {
-        id: user.id,
-        username: user.username,
-        fullName: user.fullName,
-        role: user.role,
-      },
+      return {
+        accessToken: this.jwtService.sign(payload, {
+          secret: jwtConfig.secret,
+          expiresIn: jwtConfig.expiresIn,
+        }),
+      // user: {
+      //   id: user.id,
+      //   username: user.username,
+      //   fullName: user.fullName,
+      //   role: user.role,
+      // },
     };
   }
 
