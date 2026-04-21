@@ -12,6 +12,8 @@ import { QuestionsModule } from './modules/questions/questions.module';
 import { SubjectsModule } from './modules/subjects/subjects.module';
 
 import { ExamsModule } from './modules/exams/exams.module';
+import { SessionsModule } from './modules/sessions/sessions.module';
+import { AttemptsModule } from './modules/attempts/attempts.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { ExamsModule } from './modules/exams/exams.module';
     QuestionsModule,
     SubjectsModule,
     ExamsModule,
+    SessionsModule,
+    AttemptsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
