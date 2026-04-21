@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+//src/modules/auth/auth.service.ts
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
@@ -19,13 +24,18 @@ export class AuthService {
       throw new UnauthorizedException('Tên đăng nhập hoặc mật khẩu không đúng');
     }
 
-      const payload = { sub: user.id, username: user.username, role: user.role, fullname: user.fullName };
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      role: user.role,
+      fullname: user.fullName,
+    };
 
-      return {
-        accessToken: this.jwtService.sign(payload, {
-          secret: jwtConfig.secret,
-          expiresIn: jwtConfig.expiresIn,
-        }),
+    return {
+      accessToken: this.jwtService.sign(payload, {
+        secret: jwtConfig.secret,
+        expiresIn: jwtConfig.expiresIn,
+      }),
       // user: {
       //   id: user.id,
       //   username: user.username,
@@ -35,7 +45,11 @@ export class AuthService {
     };
   }
 
-  async changePassword(userId: number, currentPassword: string, newPassword: string) {
+  async changePassword(
+    userId: number,
+    currentPassword: string,
+    newPassword: string,
+  ) {
     const user = await this.usersService.findById(userId);
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
