@@ -1,7 +1,9 @@
 //src/pages/auth/LoginPage.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/auth.store";
+import { jwtDecode } from "jwt-decode";
 import { login } from "../../api/auth.api";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
@@ -26,13 +28,24 @@ const LoginPage = () => {
 
     try {
       const res = await login({ username, password });
-      setAuth(res.data.user, res.data.accessToken);
 
-      const role = res.data.user.role;
-      if (role === "ADMIN") navigate("/admin/users");
-      else if (role === "TEACHER") navigate("/teacher/questions");
+      const token = res.data.accessToken;
+
+      // decode token
+      const decoded: any = jwtDecode(token);
+
+      const user = {
+        id: decoded.sub,
+        username: decoded.username,
+        fullName: decoded.fullname,
+        role: decoded.role
+      };
+
+      setAuth(user, token);
+
+      if (user.role === "ADMIN") navigate("/admin/users");
+      else if (user.role === "TEACHER") navigate("/teacher/questions");
       else navigate("/student/room");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err?.message || "Đăng nhập thất bại, vui lòng thử lại.");
     } finally {

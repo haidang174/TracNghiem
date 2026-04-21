@@ -18,7 +18,6 @@ interface LoginResponse {
   message: string;
   data: {
     accessToken: string;
-    user: User;
   };
 }
 
@@ -38,8 +37,8 @@ export const logout = (): Promise<void> => {
 };
 
 // Lấy thông tin user hiện tại
-export const getMe = (): Promise<LoginResponse["data"]["user"]> => {
-  return client.get("/auth/me") as unknown as Promise<LoginResponse["data"]["user"]>;
+export const getMe = (): Promise<User> => {
+  return client.get("/auth/me") as unknown as Promise<User>;
 };
 
 // Đổi mật khẩu
