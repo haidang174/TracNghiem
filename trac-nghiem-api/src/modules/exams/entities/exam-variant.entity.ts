@@ -5,6 +5,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { Exam } from './exam.entity';
 import { VariantQuestion } from './variant-question.entity';
@@ -23,6 +24,7 @@ export class ExamVariant {
   // Relations
 
   @ManyToOne(() => Exam, (exam) => exam.variants)
+  @JoinColumn({ name: 'exam_id' })
   exam: Exam;
 
   @OneToMany(() => VariantQuestion, (vq) => vq.variant)

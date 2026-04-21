@@ -12,6 +12,11 @@ import { Exam } from './entities/exam.entity';
 import { ExamVariant } from './entities/exam-variant.entity';
 import { VariantQuestion } from './entities/variant-question.entity';
 import { CreateExamDto } from './dto/create-exam.dto';
+import {
+  ExamResponseDto,
+  VariantResponseDto,
+  VariantQuestionResponseDto,
+} from './dto/exam-response.dto';
 
 @Injectable()
 export class ExamsService {
@@ -28,47 +33,102 @@ export class ExamsService {
     private dataSource: DataSource,
   ) {}
 
-  async findAll(): Promise<Exam[]> {
-    return this.examRepo.find({ relations: ['subject', 'creator'] });
+  // Mappers
+
+  private toResponseDto(exam: Exam): ExamResponseDto {
+    return {
+      id: exam.id,
+      title: exam.title,
+      subject_id: exam.subject_id,
+      duration: exam.duration,
+      question_count: exam.question_count,
+      variant_count: exam.variant_count,
+      created_by: exam.created_by,
+      created_at: exam.created_at,
+      variants: exam.variants?.map((v) => this.toVariantDto(v)),
+    };
   }
 
-  async findOne(id: number): Promise<Exam> {
+  private toVariantDto(variant: ExamVariant): VariantResponseDto {
+    return {
+      id: variant.id,
+      variant_code: variant.variant_code,
+    };
+  }
+
+  private toVariantQuestionDto(
+    vq: VariantQuestion,
+  ): VariantQuestionResponseDto {
+    return {
+      order_index: vq.order_index,
+      question_id: vq.question_id,
+      content: vq.question?.content,
+      answers:
+        vq.question?.answers?.map((a) => ({
+          id: a.id,
+          content: a.content,
+          // is_correct bị loại bỏ
+        })) ?? [],
+    };
+  }
+
+  // Internal: lấy raw entity
+
+  private async findEntity(id: number): Promise<Exam> {
     const exam = await this.examRepo.findOne({
       where: { id },
-      relations: ['subject', 'creator', 'variants'],
+      relations: ['variants'],
     });
     if (!exam) throw new NotFoundException(`Exam #${id} không tồn tại`);
     return exam;
   }
 
-  async create(dto: CreateExamDto, userId: number): Promise<Exam> {
-    const exam = this.examRepo.create({ ...dto, created_by: userId });
-    return this.examRepo.save(exam);
+  // Public methods
+
+  async findAll(): Promise<ExamResponseDto[]> {
+    const exams = await this.examRepo.find({ relations: ['variants'] });
+    return exams.map((e) => this.toResponseDto(e));
   }
 
-  async update(id: number, dto: Partial<CreateExamDto>): Promise<Exam> {
-    const exam = await this.findOne(id);
+  async findOne(id: number): Promise<ExamResponseDto> {
+    const exam = await this.findEntity(id);
+    return this.toResponseDto(exam);
+  }
+
+  async create(dto: CreateExamDto, userId: number): Promise<ExamResponseDto> {
+    const exam = this.examRepo.create({ ...dto, created_by: userId });
+    const saved = await this.examRepo.save(exam);
+    const full = await this.findEntity(saved.id);
+    return this.toResponseDto(full);
+  }
+
+  async update(
+    id: number,
+    dto: Partial<CreateExamDto>,
+  ): Promise<ExamResponseDto> {
+    const exam = await this.findEntity(id);
     Object.assign(exam, dto);
-    return this.examRepo.save(exam);
+    const saved = await this.examRepo.save(exam);
+    return this.toResponseDto(saved);
   }
 
   async remove(id: number): Promise<void> {
-    const exam = await this.findOne(id);
+    const exam = await this.findEntity(id);
     await this.examRepo.remove(exam);
   }
 
-  // Lấy danh sách variants của 1 đề thi
-  async findVariants(exam_id: number): Promise<ExamVariant[]> {
-    await this.findOne(exam_id); // check tồn tại
-    return this.variantRepo.find({ where: { exam_id } });
+  async findVariants(exam_id: number): Promise<VariantResponseDto[]> {
+    await this.findEntity(exam_id);
+    const variants = await this.variantRepo.find({ where: { exam_id } });
+    return variants.map((v) => this.toVariantDto(v));
   }
 
-  // Lấy câu hỏi theo từng variant
   async findVariantQuestions(
     exam_id: number,
     variant_id: number,
-  ): Promise<VariantQuestion[]> {
-    await this.findOne(exam_id);
+  ): Promise<VariantQuestionResponseDto[]> {
+    await this.findEntity(exam_id);
+
     const variant = await this.variantRepo.findOne({
       where: { id: variant_id, exam_id },
     });
@@ -77,18 +137,18 @@ export class ExamsService {
         `Variant #${variant_id} không thuộc exam #${exam_id}`,
       );
 
-    return this.variantQuestionRepo.find({
+    const vqs = await this.variantQuestionRepo.find({
       where: { variant_id },
-      relations: ['question'],
+      relations: ['question', 'question.answers'],
       order: { order_index: 'ASC' },
     });
+
+    return vqs.map((vq) => this.toVariantQuestionDto(vq));
   }
 
-  // Tự động sinh variant ngẫu nhiên
-  async generateVariants(exam_id: number): Promise<ExamVariant[]> {
-    const exam = await this.findOne(exam_id);
+  async generateVariants(exam_id: number): Promise<VariantResponseDto[]> {
+    const exam = await this.findEntity(exam_id);
 
-    // Lấy toàn bộ câu hỏi thuộc subject của đề thi
     const allQuestions = await this.dataSource.query(
       `SELECT id FROM questions WHERE subject_id = ? ORDER BY RAND()`,
       [exam.subject_id],
@@ -113,11 +173,10 @@ export class ExamsService {
     const savedVariants: ExamVariant[] = [];
 
     for (let i = 0; i < exam.variant_count; i++) {
-      // Xáo trộn và chọn đủ số câu
       const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
       const selected = shuffled.slice(0, exam.question_count);
 
-      const variant_code = String.fromCharCode(65 + i); // A, B, C, D...
+      const variant_code = String.fromCharCode(65 + i); // A, B, C...
 
       const variant = await this.variantRepo.save(
         this.variantRepo.create({ exam_id, variant_code }),
@@ -131,10 +190,9 @@ export class ExamsService {
         }),
       );
       await this.variantQuestionRepo.save(vqs);
-
       savedVariants.push(variant);
     }
 
-    return savedVariants;
+    return savedVariants.map((v) => this.toVariantDto(v));
   }
 }

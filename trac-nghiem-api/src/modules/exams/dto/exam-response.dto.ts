@@ -4,6 +4,18 @@ export class VariantResponseDto {
   variant_code: string;
 }
 
+export class AnswerResponseDto {
+  id: number;
+  content: string;
+}
+
+export class VariantQuestionResponseDto {
+  order_index: number;
+  question_id: number;
+  content: string;
+  answers: AnswerResponseDto[];
+}
+
 export class ExamResponseDto {
   id: number;
   title: string;
