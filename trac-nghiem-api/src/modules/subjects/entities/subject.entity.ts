@@ -2,10 +2,10 @@
 
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity("subjects ")
+@Entity('subjects')
 export class Subject {
-    @PrimaryGeneratedColumn()
-    id: number;
-    @Column()
-    name: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  name: string;
 }
