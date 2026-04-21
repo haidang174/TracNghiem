@@ -1,14 +1,14 @@
-import { Module } from "@nestjs/common";
-import { SubjectsService } from "./subjects.service";
-import { SubjectsController } from "./subjects.controller";
-import { Subject } from "./entities/subject.entity";
-import { TypeOrmModule } from "@nestjs/typeorm/dist/typeorm.module";
+//src/modules/subjects/subjects.module.ts
+import { Module } from '@nestjs/common';
+import { SubjectsService } from './subjects.service';
+import { SubjectsController } from './subjects.controller';
+import { Subject } from './entities/subject.entity';
+import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 
-
-Module({
-    imports: [TypeOrmModule.forFeature([Subject])],
-    controllers: [SubjectsController],
-    providers: [SubjectsService],
+@Module({
+  imports: [TypeOrmModule.forFeature([Subject])],
+  controllers: [SubjectsController],
+  providers: [SubjectsService],
+  exports: [SubjectsService], // QuestionsModule, ExamsModule cần
 })
-export class SubjectsModule {
-}
+export class SubjectsModule {}
