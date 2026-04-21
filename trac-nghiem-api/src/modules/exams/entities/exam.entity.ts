@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { Subject } from '../../subjects/entities/subject.entity';
 import { User } from '../../users/entities/user.entity';
@@ -40,9 +41,11 @@ export class Exam {
   // Relations
 
   @ManyToOne(() => Subject)
+  @JoinColumn({ name: 'subject_id' })
   subject: Subject;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'created_by' })
   creator: User;
 
   @OneToMany(() => ExamVariant, (variant) => variant.exam)
