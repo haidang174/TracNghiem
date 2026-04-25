@@ -1,10 +1,11 @@
+//src/modules/users/users.service.ts
 import {
   Injectable,
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -42,6 +43,29 @@ export class UsersService {
 
   async findByUsername(username: string): Promise<User | null> {
     return this.userRepo.findOne({ where: { username } });
+  }
+
+  async findAllPaginated(
+    page: number,
+    limit: number,
+    search?: string,
+  ): Promise<{ data: User[]; total: number }> {
+    const where = search
+      ? [
+          { fullName: ILike(`%${search}%`) },
+          { username: ILike(`%${search}%`) },
+          { email: ILike(`%${search}%`) },
+        ]
+      : {};
+
+    const [data, total] = await this.userRepo.findAndCount({
+      where,
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { data, total };
   }
 
   async update(id: number, dto: UpdateUserDto): Promise<User> {
