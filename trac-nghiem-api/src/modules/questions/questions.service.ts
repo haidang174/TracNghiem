@@ -154,7 +154,7 @@ export class QuestionsService {
 
   async remove(id: number): Promise<void> {
     const question = await this.findEntity(id);
-    // answers tự xoá theo cascade
+    await this.answerRepo.delete({ question_id: id });
     await this.questionRepo.remove(question);
   }
 
