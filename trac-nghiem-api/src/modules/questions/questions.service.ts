@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { Question } from './entities/question.entity';
 import { Answer } from './entities/answer.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -41,6 +41,7 @@ export class QuestionsService {
     return {
       id: question.id,
       subject_id: question.subject_id,
+      subject_name: question.subject?.name,
       content: question.content,
       created_by: question.created_by,
       created_at: question.created_at,
@@ -70,12 +71,29 @@ export class QuestionsService {
 
   // Public methods
 
-  async findAll(subject_id?: number): Promise<QuestionResponseDto[]> {
-    const questions = await this.questionRepo.find({
-      where: subject_id ? { subject_id } : {},
-      relations: ['answers'],
+  async findAll(
+    subject_id?: number,
+    search?: string,
+    page = 1,
+    limit = 10,
+  ): Promise<{ data: QuestionResponseDto[]; total: number }> {
+    const where: FindOptionsWhere<Question> | FindOptionsWhere<Question>[] = {};
+
+    if (subject_id) where['subject_id'] = subject_id;
+
+    const baseWhere = search
+      ? [{ ...where, content: ILike(`%${search}%`) }]
+      : where;
+
+    const [questions, total] = await this.questionRepo.findAndCount({
+      where: baseWhere,
+      relations: ['answers', 'subject'],
+      order: { created_at: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
     });
-    return questions.map((q) => this.toResponseDto(q, true));
+
+    return { data: questions.map((q) => this.toResponseDto(q, true)), total };
   }
 
   async findOne(id: number): Promise<QuestionResponseDto> {
