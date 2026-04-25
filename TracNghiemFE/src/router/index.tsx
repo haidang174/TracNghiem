@@ -17,6 +17,8 @@ import SubjectListPage from "../pages/admin/subjects/SubjectListPage";
 // Teacher pages
 import QuestionListPage from "../pages/teacher/questions/QuestionListPage";
 import ExamListPage from "../pages/teacher/exams/ExamListPage";
+import ExamFormPage from "../pages/teacher/exams/ExamFormPage";
+import ExamDetailPage from "../pages/teacher/exams/ExamDetailPage";
 import SessionListPage from "../pages/teacher/sessions/SessionListPage";
 
 // Student pages
@@ -90,6 +92,30 @@ const AppRouter = () => {
             element={
               <RoleRoute allowedRoles={["ADMIN", "TEACHER"]}>
                 <ExamListPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/exams/create"
+            element={
+              <RoleRoute allowedRoles={["ADMIN", "TEACHER"]}>
+                <ExamFormPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/exams/:id/edit"
+            element={
+              <RoleRoute allowedRoles={["ADMIN", "TEACHER"]}>
+                <ExamFormPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/exams/:id"
+            element={
+              <RoleRoute allowedRoles={["ADMIN", "TEACHER"]}>
+                <ExamDetailPage />
               </RoleRoute>
             }
           />

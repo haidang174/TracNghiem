@@ -7,7 +7,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, ILike } from 'typeorm';
 import { Exam } from './entities/exam.entity';
 import { ExamVariant } from './entities/exam-variant.entity';
 import { VariantQuestion } from './entities/variant-question.entity';
@@ -40,6 +40,7 @@ export class ExamsService {
       id: exam.id,
       title: exam.title,
       subject_id: exam.subject_id,
+      subject_name: exam.subject?.name,
       duration: exam.duration,
       question_count: exam.question_count,
       variant_count: exam.variant_count,
@@ -77,13 +78,31 @@ export class ExamsService {
   private async findEntity(id: number): Promise<Exam> {
     const exam = await this.examRepo.findOne({
       where: { id },
-      relations: ['variants'],
+      relations: ['variants', 'subject'],
     });
     if (!exam) throw new NotFoundException(`Exam #${id} không tồn tại`);
     return exam;
   }
 
   // Public methods
+
+  async findAllPaginated(
+    page: number,
+    limit: number,
+    search?: string,
+  ): Promise<{ data: ExamResponseDto[]; total: number }> {
+    const where = search ? { title: ILike(`%${search}%`) } : {};
+
+    const [exams, total] = await this.examRepo.findAndCount({
+      where,
+      relations: ['variants', 'subject'],
+      order: { created_at: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { data: exams.map((e) => this.toResponseDto(e)), total };
+  }
 
   async findAll(): Promise<ExamResponseDto[]> {
     const exams = await this.examRepo.find({ relations: ['variants'] });
@@ -114,6 +133,16 @@ export class ExamsService {
 
   async remove(id: number): Promise<void> {
     const exam = await this.findEntity(id);
+
+    const variants = await this.variantRepo.find({ where: { exam_id: id } });
+    if (variants.length > 0) {
+      const variantIds = variants.map((v) => v.id);
+      for (const variantId of variantIds) {
+        await this.variantQuestionRepo.delete({ variant_id: variantId });
+      }
+      await this.variantRepo.delete({ exam_id: id });
+    }
+
     await this.examRepo.remove(exam);
   }
 

@@ -20,6 +20,7 @@ export class ExamResponseDto {
   id: number;
   title: string;
   subject_id: number;
+  subject_name: string;
   duration: number;
   question_count: number;
   variant_count: number;

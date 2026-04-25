@@ -8,6 +8,8 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { CreateExamDto } from './dto/create-exam.dto';
@@ -15,17 +17,33 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Role } from '../../common/enums/role.enum';
 import { ApiResponse } from '../../common/dto/api-response.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @Controller('exams')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ExamsController {
   constructor(private readonly examsService: ExamsService) {}
 
   // GET /exams
   @Get()
   @Roles(Role.ADMIN, Role.TEACHER)
-  async findAll() {
-    const exams = await this.examsService.findAll();
-    return new ApiResponse(200, 'Lấy danh sách đề thi thành công', exams);
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search?: string,
+  ) {
+    const result = await this.examsService.findAllPaginated(
+      +page,
+      +limit,
+      search,
+    );
+    return new ApiResponse(200, 'Lấy danh sách đề thi thành công', {
+      data: result.data,
+      total: result.total,
+      page: +page,
+      limit: +limit,
+    });
   }
 
   // POST /exams
