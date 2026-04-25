@@ -7,7 +7,7 @@ import {
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { Subject } from './entities/subject.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { SubjectResponseDto } from './dto/subject-response.dto';
 
 @Injectable()
@@ -49,6 +49,34 @@ export class SubjectsService {
   }
 
   // Public methods
+
+  async findAllPaginated(
+    page: number,
+    limit: number,
+    search?: string,
+  ): Promise<{
+    data: SubjectResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const where = search ? { name: ILike(`%${search}%`) } : {};
+
+    const [subjects, total] = await this.subjectRepo.findAndCount({
+      where,
+      relations: ['questions'],
+      order: { name: 'ASC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data: subjects.map((s) => this.toResponseDto(s)),
+      total,
+      page,
+      limit,
+    };
+  }
 
   async findAll(): Promise<SubjectResponseDto[]> {
     const subjects = await this.subjectRepo.find({

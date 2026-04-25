@@ -1,4 +1,5 @@
 //src/modules/subjects/subjects.controller.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Get,
@@ -9,6 +10,7 @@ import {
   Param,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
@@ -28,8 +30,16 @@ export class SubjectsController {
 
   @Get()
   @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)
-  async findAll() {
-    const subjects = await this.subjectsService.findAll();
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search?: string,
+  ) {
+    const subjects = await this.subjectsService.findAllPaginated(
+      +page,
+      +limit,
+      search,
+    );
     return new ApiResponse(200, 'Lấy danh sách môn học thành công', subjects);
   }
 
