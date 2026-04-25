@@ -1,6 +1,18 @@
+//src/modules/users/users.controller.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
-  Controller, Get, Post, Put, Delete, Patch,
-  Body, Param, Query, UseGuards, ParseIntPipe,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Patch,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,7 +27,7 @@ import { ApiResponse } from '../../common/dto/api-response.dto';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   // POST /users
   @Post()
@@ -65,9 +77,12 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body('isActive') isActive: boolean,
   ) {
-    const user = await this.usersService.setStatus(id, isActive);
+    const active = Boolean(isActive);
+    const user = await this.usersService.setStatus(id, active);
     const { password, ...data } = user as any;
-    const msg = isActive ? 'Kích hoạt tài khoản thành công' : 'Khoá tài khoản thành công';
+    const msg = active
+      ? 'Kích hoạt tài khoản thành công'
+      : 'Khoá tài khoản thành công';
     return new ApiResponse(1, msg, data);
   }
 }
