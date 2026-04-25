@@ -24,6 +24,10 @@ export class AuthService {
       throw new UnauthorizedException('Tên đăng nhập hoặc mật khẩu không đúng');
     }
 
+    if (user.isActive == false) {
+      throw new UnauthorizedException('Tài khoản đã bị vô hiệu hóa');
+    }
+
     const payload = {
       sub: user.id,
       username: user.username,
