@@ -8,6 +8,7 @@ export class AnswerResponseDto {
 export class QuestionResponseDto {
   id: number;
   subject_id: number;
+  subject_name: string;
   content: string;
   created_by: number;
   created_at: Date;

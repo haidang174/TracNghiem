@@ -27,10 +27,25 @@ export class QuestionsController {
 
   @Get()
   @Roles(Role.ADMIN, Role.TEACHER)
-  async findAll(@Query('subject_id') subject_id?: string) {
+  async findAll(
+    @Query('subject_id') subject_id?: string,
+    @Query('search') search?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
     const id = subject_id ? parseInt(subject_id) : undefined;
-    const questions = await this.questionsService.findAll(id);
-    return new ApiResponse(200, 'Lấy danh sách câu hỏi thành công', questions);
+    const result = await this.questionsService.findAll(
+      id,
+      search,
+      +page,
+      +limit,
+    );
+    return new ApiResponse(200, 'Lấy danh sách câu hỏi thành công', {
+      data: result.data,
+      total: result.total,
+      page: +page,
+      limit: +limit,
+    });
   }
 
   @Post()
