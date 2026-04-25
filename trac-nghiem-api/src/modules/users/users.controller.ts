@@ -39,10 +39,23 @@ export class UsersController {
 
   // GET /users?role=STUDENT
   @Get()
-  async findAll(@Query('role') role?: Role) {
-    const users = await this.usersService.findAll(role);
-    const data = users.map(({ password, ...u }: any) => u);
-    return new ApiResponse(1, 'Lấy danh sách người dùng thành công', data);
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search?: string,
+  ) {
+    const result = await this.usersService.findAllPaginated(
+      +page,
+      +limit,
+      search,
+    );
+    const data = result.data.map(({ password, ...u }: any) => u);
+    return new ApiResponse(1, 'Lấy danh sách người dùng thành công', {
+      data,
+      total: result.total,
+      page: +page,
+      limit: +limit,
+    });
   }
 
   // GET /users/:id
