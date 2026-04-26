@@ -8,12 +8,15 @@ export interface Attempt {
   variant_id: number;
   status: "in_progress" | "submitted";
   tab_switch_count: number;
-  started_at: string;
+  start_time: string;
   submitted_at?: string;
+  duration_seconds: number;
+  answered_count: number;
+  total_count: number;
 }
 
 export interface AttemptQuestion {
-  id: number;
+  question_id: number;
   content: string;
   answers: {
     id: number;
@@ -21,15 +24,15 @@ export interface AttemptQuestion {
   }[];
 }
 
-export const startAttempt = (sessionId: number): Promise<Attempt> => {
+export const startAttempt = (sessionId: number): Promise<{ data: Attempt }> => {
   return client.post(`/sessions/${sessionId}/start`);
 };
 
-export const getAttempt = (attemptId: number): Promise<Attempt> => {
+export const getAttempt = (attemptId: number): Promise<{ data: Attempt }> => {
   return client.get(`/attempts/${attemptId}`);
 };
 
-export const getAttemptQuestions = (attemptId: number): Promise<AttemptQuestion[]> => {
+export const getAttemptQuestions = (attemptId: number): Promise<{ data: AttemptQuestion[] }> => {
   return client.get(`/attempts/${attemptId}/questions`);
 };
 

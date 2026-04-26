@@ -155,14 +155,6 @@ const AppRouter = () => {
             }
           />
           <Route
-            path="/student/attempt/:id"
-            element={
-              <RoleRoute allowedRoles={["STUDENT"]}>
-                <AttemptPage />
-              </RoleRoute>
-            }
-          />
-          <Route
             path="/student/result/:id"
             element={
               <RoleRoute allowedRoles={["STUDENT"]}>
@@ -171,6 +163,17 @@ const AppRouter = () => {
             }
           />
         </Route>
+
+        <Route
+          path="/student/attempt/:id"
+          element={
+            <PrivateRoute>
+              <RoleRoute allowedRoles={["STUDENT"]}>
+                <AttemptPage />
+              </RoleRoute>
+            </PrivateRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="/" element={<HomeRedirect />} />

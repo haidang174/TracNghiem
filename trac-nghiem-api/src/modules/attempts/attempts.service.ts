@@ -45,6 +45,7 @@ export class AttemptsService {
       tab_switch_count: attempt.tab_switch_count,
       answered_count: attempt.attempt_answers?.length ?? 0,
       total_count,
+      duration_seconds: (attempt.session?.duration ?? 45) * 60,
     };
   }
 
@@ -169,7 +170,6 @@ export class AttemptsService {
       order_index: number;
       question_id: number;
       content: string;
-      image_url: string | null;
       answer_id: number;
       answer_content: string;
       selected_answer_id: number | null;
@@ -178,7 +178,6 @@ export class AttemptsService {
         vq.order_index,
         vq.question_id,
         q.content,
-        q.image_url,
         a.id          AS answer_id,
         a.content     AS answer_content,
         aa.answer_id  AS selected_answer_id
@@ -201,7 +200,6 @@ export class AttemptsService {
           order_index: row.order_index,
           question_id: row.question_id,
           content: row.content,
-          image_url: row.image_url,
           answers: [],
           selected_answer_id: row.selected_answer_id ?? null,
         });
@@ -274,8 +272,10 @@ export class AttemptsService {
     const answers = await this.attemptAnswerRepo.find({
       where: { attempt_id: id },
     });
+
     const total = answers.length;
-    const correct_count = answers.filter((a) => a.is_correct === true).length;
+    const correct_count = answers.filter((a) => Boolean(a.is_correct)).length;
+
     const score =
       total > 0 ? parseFloat(((correct_count / total) * 10).toFixed(2)) : 0;
 

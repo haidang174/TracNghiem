@@ -9,7 +9,6 @@ export class AttemptQuestionDto {
   order_index: number;
   question_id: number;
   content: string;
-  image_url: string | null;
   answers: AttemptAnswerOptionDto[];
   selected_answer_id: number | null; // đáp án student đã chọn (nếu có)
 }
@@ -26,4 +25,5 @@ export class AttemptResponseDto {
   tab_switch_count: number;
   answered_count: number; // số câu đã trả lời
   total_count: number; // tổng số câu
+  duration_seconds: number;
 }

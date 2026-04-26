@@ -21,13 +21,14 @@ export interface AttemptResult {
   session_title: string;
   exam_title: string;
   score: number;
-  total_questions: number;
+  total_count: number;
+  start_time: string;
   correct_count: number;
   duration_seconds: number;
-  submitted_at: string;
+  end_time: string;
   answers: {
     question_id: number;
-    question_content: string;
+    content: string;
     selected_answer_id: number;
     selected_answer_content: string;
     correct_answer_id: number;
