@@ -21,6 +21,7 @@ import ExamFormPage from "../pages/teacher/exams/ExamFormPage";
 import ExamDetailPage from "../pages/teacher/exams/ExamDetailPage";
 import SessionListPage from "../pages/teacher/sessions/SessionListPage";
 import SessionDetailPage from "../pages/teacher/sessions/SessionDetailPage";
+import SessionResultsPage from "../pages/teacher/sessions/SessionResultsPage";
 
 // Student pages
 import StudentLayout from "../components/layout/StudentLayout";
@@ -133,6 +134,14 @@ const AppRouter = () => {
             element={
               <RoleRoute allowedRoles={["ADMIN", "TEACHER"]}>
                 <SessionDetailPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/attempts/:attemptId/result"
+            element={
+              <RoleRoute allowedRoles={["ADMIN", "TEACHER"]}>
+                <SessionResultsPage />
               </RoleRoute>
             }
           />
