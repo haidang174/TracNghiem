@@ -4,13 +4,13 @@ import client from "./client";
 export interface SessionResult {
   student_id: number;
   username: string;
-  full_name: string;
+  student_name: string;
   attempt_id: number;
   score: number;
-  total_questions: number;
   correct_count: number;
-  duration_seconds: number;
-  submitted_at: string;
+  total_count: number;
+  status: string;
+  tab_switch_count: number;
 }
 
 export interface AttemptResult {
@@ -40,7 +40,7 @@ export interface AttemptResult {
 export interface SessionStats {
   total_students: number;
   submitted_count: number;
-  average_score: number;
+  avg_score: number;
   highest_score: number;
   lowest_score: number;
   distribution: {
