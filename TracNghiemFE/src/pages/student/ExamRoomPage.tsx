@@ -48,7 +48,7 @@ const ExamRoomPage = () => {
     setError("");
     try {
       const attempt = await startAttempt(sessionId);
-      navigate(`/student/attempt/${attempt.id}`);
+      navigate(`/student/attempt/${attempt.data.id}`);
     } catch (err: any) {
       setError(err?.message || "Không thể bắt đầu thi, vui lòng thử lại.");
     } finally {
