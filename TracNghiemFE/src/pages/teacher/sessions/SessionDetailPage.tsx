@@ -130,7 +130,7 @@ const SessionDetailPage = () => {
           {[
             { label: "Học sinh", value: stats.total_students },
             { label: "Đã nộp bài", value: stats.submitted_count },
-            { label: "Điểm TB", value: stats.average_score.toFixed(1) },
+            { label: "Điểm TB", value: stats.avg_score.toFixed(1) },
             { label: "Điểm cao nhất", value: stats.highest_score.toFixed(1) }
           ].map(item => (
             <div key={item.label} className="bg-white border border-neutral-200 rounded-xl p-4">
@@ -205,19 +205,17 @@ const SessionDetailPage = () => {
                 results.map(r => (
                   <tr key={r.attempt_id} className="border-t border-neutral-100 hover:bg-neutral-50">
                     <td className="px-6 py-3">
-                      <p className="font-medium text-black">{r.full_name}</p>
+                      <p className="font-medium text-black">{r.student_name}</p>
                       <p className="text-xs text-neutral-400">{r.username}</p>
                     </td>
                     <td className="px-6 py-3">
                       <span className={`font-bold text-base ${r.score >= 5 ? "text-green-600" : "text-red-500"}`}>{r.score.toFixed(1)}</span>
                     </td>
                     <td className="px-6 py-3 text-neutral-600">
-                      {r.correct_count} / {r.total_questions}
+                      {r.correct_count} / {r.total_count}
                     </td>
-                    <td className="px-6 py-3 text-neutral-600">
-                      {Math.floor(r.duration_seconds / 60)}p {r.duration_seconds % 60}s
-                    </td>
-                    <td className="px-6 py-3 text-neutral-500">{new Date(r.submitted_at).toLocaleString("vi-VN")}</td>
+                    <td className="px-6 py-3 text-neutral-600">{r.tab_switch_count} lần chuyển tab</td>
+                    <td className="px-6 py-3 text-neutral-500">{r.status === "submitted" ? "Đã nộp" : "Đang làm"}</td>
                     <td className="px-6 py-3 text-right">
                       <Button variant="ghost" size="sm" onClick={() => navigate(`/teacher/attempts/${r.attempt_id}/result`)}>
                         Xem
@@ -249,7 +247,7 @@ const SessionDetailPage = () => {
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-neutral-400">Điểm trung bình</span>
-                    <span className="font-medium text-black">{stats.average_score.toFixed(1)}</span>
+                    <span className="font-medium text-black">{stats.avg_score.toFixed(1)}</span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-neutral-400">Tỉ lệ nộp bài</span>
