@@ -78,7 +78,7 @@ const SessionDetailPage = () => {
   if (!session) return <div className="text-sm text-neutral-400">Không tìm thấy phòng thi.</div>;
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl">
+    <div className="flex flex-col gap-6 max-w">
       {/* Page header */}
       <div className="flex items-start justify-between">
         <div>

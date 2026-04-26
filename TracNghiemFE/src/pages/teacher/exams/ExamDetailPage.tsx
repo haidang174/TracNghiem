@@ -67,7 +67,7 @@ const ExamDetailPage = () => {
   if (!exam) return <div className="text-sm text-neutral-400">Không tìm thấy đề thi.</div>;
 
   return (
-    <div className="flex flex-col gap-6 max-w-3xl">
+    <div className="flex flex-col gap-6 max-w">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -75,7 +75,7 @@ const ExamDetailPage = () => {
             ← Quay lại
           </button>
           <h1 className="text-xl font-bold text-black">{exam.title}</h1>
-          <p className="text-sm text-neutral-500">{exam.subject_name}</p>
+          <p className="text-sm text-neutral-500">Môn: {exam.subject_name}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => navigate(`/teacher/exams/${id}/edit`)}>
