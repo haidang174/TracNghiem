@@ -57,6 +57,28 @@ export class SessionsController {
     return new ApiResponse(200, 'Tạo phòng thi thành công', session);
   }
 
+  @Get('my')
+  @Roles(Role.STUDENT)
+  async findMy(
+    @CurrentUser('id') userId: number,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search?: string,
+  ) {
+    const result = await this.sessionsService.findMyPaginated(
+      userId,
+      +page,
+      +limit,
+      search,
+    );
+    return new ApiResponse(200, 'Lấy danh sách phòng thi của tôi thành công', {
+      data: result.data,
+      total: result.total,
+      page: +page,
+      limit: +limit,
+    });
+  }
+
   // STUDENT chỉ xem session mình tham gia — kiểm tra trong service
   @Get(':id')
   @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)

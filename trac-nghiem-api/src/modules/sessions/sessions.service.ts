@@ -90,6 +90,35 @@ export class SessionsService {
     return { data: sessions.map((s) => this.toResponseDto(s)), total };
   }
 
+  async findMyPaginated(
+    student_id: number,
+    page: number,
+    limit: number,
+    search?: string,
+  ): Promise<{ data: SessionResponseDto[]; total: number }> {
+    const qb = this.sessionRepo
+      .createQueryBuilder('session')
+      .innerJoin(
+        'session.sessionStudents',
+        'ss',
+        'ss.student_id = :student_id',
+        { student_id },
+      )
+      .leftJoinAndSelect('session.exam', 'exam')
+      .leftJoinAndSelect('session.sessionStudents', 'sessionStudents')
+      .orderBy('session.created_at', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    if (search) {
+      qb.where('session.title LIKE :search', { search: `%${search}%` });
+    }
+
+    const [sessions, total] = await qb.getManyAndCount();
+
+    return { data: sessions.map((s) => this.toResponseDto(s)), total };
+  }
+
   async findAll(): Promise<SessionResponseDto[]> {
     const sessions = await this.sessionRepo.find({
       relations: ['exam', 'sessionStudents'],

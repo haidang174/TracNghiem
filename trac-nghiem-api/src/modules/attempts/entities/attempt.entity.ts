@@ -46,7 +46,7 @@ export class Attempt {
   @Column()
   status: AttemptStatus;
 
-  @Column()
+  @Column({ default: 0 })
   tab_switch_count: number;
 
   @ManyToOne(() => ExamSession)
