@@ -9,6 +9,7 @@ import {
   Body,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { CreateSessionDto } from './dto/create-session.dto';
@@ -28,9 +29,22 @@ export class SessionsController {
 
   @Get()
   @Roles(Role.ADMIN, Role.TEACHER)
-  async findAll() {
-    const sessions = await this.sessionsService.findAll();
-    return new ApiResponse(200, 'Lấy danh sách phòng thi thành công', sessions);
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search?: string,
+  ) {
+    const result = await this.sessionsService.findAllPaginated(
+      +page,
+      +limit,
+      search,
+    );
+    return new ApiResponse(200, 'Lấy danh sách phòng thi thành công', {
+      data: result.data,
+      total: result.total,
+      page: +page,
+      limit: +limit,
+    });
   }
 
   @Post()

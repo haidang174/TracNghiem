@@ -77,7 +77,7 @@ export class ResultsService {
       `SELECT
         a.id            AS attempt_id,
         a.student_id,
-        u.full_name     AS student_name,
+        u.fullName     AS student_name,
         ev.variant_code,
         a.score,
         a.status,
@@ -89,7 +89,7 @@ export class ResultsService {
       JOIN exam_variants ev ON ev.id = a.variant_id
       LEFT JOIN attempt_answers aa ON aa.attempt_id = a.id
       WHERE a.session_id = ?
-      GROUP BY a.id, a.student_id, u.full_name, ev.variant_code, a.score, a.status, a.tab_switch_count
+      GROUP BY a.id, a.student_id, u.fullName, ev.variant_code, a.score, a.status, a.tab_switch_count
       ORDER BY a.score DESC`,
       [session_id],
     );
@@ -156,7 +156,7 @@ export class ResultsService {
 
     // Lấy thêm thông tin student và variant
     const [meta]: any[] = await this.dataSource.query(
-      `SELECT u.full_name, ev.variant_code
+      `SELECT u.fullName, ev.variant_code
        FROM attempts a
        JOIN users u ON u.id = a.student_id
        JOIN exam_variants ev ON ev.id = a.variant_id
@@ -167,7 +167,7 @@ export class ResultsService {
     return {
       attempt_id,
       student_id: attempt.student_id,
-      student_name: meta?.full_name,
+      student_name: meta?.fullName,
       variant_code: meta?.variant_code,
       score: attempt.score ?? 0,
       correct_count,
@@ -196,7 +196,7 @@ export class ResultsService {
       `SELECT
         a.id            AS attempt_id,
         a.student_id,
-        u.full_name     AS student_name,
+        u.fullName     AS student_name,
         ev.variant_code,
         a.score,
         a.status,
@@ -208,7 +208,7 @@ export class ResultsService {
       JOIN exam_variants ev ON ev.id = a.variant_id
       LEFT JOIN attempt_answers aa ON aa.attempt_id = a.id
       WHERE a.student_id = ?
-      GROUP BY a.id, a.student_id, u.full_name, ev.variant_code, a.score, a.status, a.tab_switch_count
+      GROUP BY a.id, a.student_id, u.fullName, ev.variant_code, a.score, a.status, a.tab_switch_count
       ORDER BY a.start_time DESC`,
       [student_id],
     );

@@ -6,7 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { ExamSession, SessionStatus } from './entities/exam-session.entity';
 import { SessionStudent } from './entities/session-student.entity';
 import { CreateSessionDto } from './dto/create-session.dto';
@@ -71,6 +71,24 @@ export class SessionsService {
   }
 
   // Public methods
+
+  async findAllPaginated(
+    page: number,
+    limit: number,
+    search?: string,
+  ): Promise<{ data: SessionResponseDto[]; total: number }> {
+    const where = search ? { title: ILike(`%${search}%`) } : {};
+
+    const [sessions, total] = await this.sessionRepo.findAndCount({
+      where,
+      relations: ['exam', 'sessionStudents'],
+      order: { created_at: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { data: sessions.map((s) => this.toResponseDto(s)), total };
+  }
 
   async findAll(): Promise<SessionResponseDto[]> {
     const sessions = await this.sessionRepo.find({
