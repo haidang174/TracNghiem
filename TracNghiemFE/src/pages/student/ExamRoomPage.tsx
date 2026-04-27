@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/common/Button";
 import { getMyRooms } from "../../api/examroom.api";
-import { startAttempt } from "../../api/attempts.api";
+import { getMyAttempt, startAttempt } from "../../api/attempts.api";
 import type { Session } from "../../api/sessions.api";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -95,7 +95,13 @@ const ExamRoomPage = () => {
                   </Button>
                 )}
                 {room.status === "closed" && (
-                  <Button variant="secondary" onClick={() => navigate(`/student/result/${room.id}`)}>
+                  <Button
+                    variant="secondary"
+                    onClick={async () => {
+                      const res = await getMyAttempt(room.id);
+                      navigate(`/student/result/${res.data.id}`);
+                    }}
+                  >
                     Xem kết quả
                   </Button>
                 )}

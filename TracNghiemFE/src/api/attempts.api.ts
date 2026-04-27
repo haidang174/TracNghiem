@@ -32,6 +32,10 @@ export const getAttempt = (attemptId: number): Promise<{ data: Attempt }> => {
   return client.get(`/attempts/${attemptId}`);
 };
 
+export const getMyAttempt = (sessionId: number): Promise<{ data: Attempt }> => {
+  return client.get(`/sessions/${sessionId}/my-attempt`);
+};
+
 export const getAttemptQuestions = (attemptId: number): Promise<{ data: AttemptQuestion[] }> => {
   return client.get(`/attempts/${attemptId}/questions`);
 };

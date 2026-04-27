@@ -156,6 +156,18 @@ export class AttemptsService {
     return this.toResponseDto(full, questions.length);
   }
 
+  async findBySession(
+    session_id: number,
+    student_id: number,
+  ): Promise<AttemptResponseDto> {
+    const attempt = await this.attemptRepo.findOne({
+      where: { session_id, student_id },
+      relations: ['attempt_answers', 'session', 'variant'],
+    });
+    if (!attempt) throw new NotFoundException('Bạn chưa làm bài thi này');
+    return this.toResponseDto(attempt);
+  }
+
   // GET /attempts/:id/questions — Lấy câu hỏi theo mã đề được gán
   async getQuestions(
     id: number,
