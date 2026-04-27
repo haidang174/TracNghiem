@@ -1,3 +1,4 @@
+//src/components/layout/AdminLayout.tsx
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/auth.store";
 import { Button } from "../common/Button";
@@ -24,9 +25,9 @@ const AdminLayout = () => {
   const filteredNav = navItems.filter(item => (role ? item.roles.includes(role) : false));
 
   return (
-    <div className="min-h-screen flex bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50">
       {/* Sidebar */}
-      <aside className="w-60 bg-white border-r border-neutral-200 flex flex-col h-screen">
+      <aside className="fixed left-0 top-0 w-60 bg-white border-r border-neutral-200 flex flex-col h-screen z-20">
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-neutral-200">
           <span className="font-bold text-lg text-black">Trắc Nghiệm</span>
@@ -60,16 +61,16 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main content */}
-      <div className="ml-60 flex-1 flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen">
         {/* Header */}
-        <header className="h-16 bg-white border-b border-neutral-200 flex items-center justify-end px-6">
+        <header className="h-16 bg-white border-b border-neutral-200 flex items-center justify-end px-6 sticky top-0 z-10">
           <p className="text-sm text-neutral-500">
             Xin chào, <span className="font-medium text-black">{user?.fullName}</span>
           </p>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6" style={{ marginLeft: "240px" }}>
           <Outlet />
         </main>
       </div>

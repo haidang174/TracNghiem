@@ -37,6 +37,19 @@ export class AttemptsController {
     return new ApiResponse(200, 'Bắt đầu bài thi thành công', attempt);
   }
 
+  @Get('sessions/:id/my-attempt')
+  @Roles(Role.STUDENT)
+  async getMyAttempt(
+    @Param('id', ParseIntPipe) session_id: number,
+    @CurrentUser('id') student_id: number,
+  ) {
+    const attempt = await this.attemptsService.findBySession(
+      session_id,
+      student_id,
+    );
+    return new ApiResponse(200, 'Lấy bài làm thành công', attempt);
+  }
+
   // GET /attempts/:id/questions
   @Get('attempts/:id/questions')
   @Roles(Role.STUDENT)
