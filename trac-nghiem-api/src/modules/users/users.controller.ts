@@ -39,6 +39,7 @@ export class UsersController {
 
   // GET /users?role=STUDENT
   @Get()
+  @Roles(Role.ADMIN, Role.TEACHER)
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
