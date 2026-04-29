@@ -87,6 +87,19 @@ export class SessionsService {
       take: limit,
     });
 
+    // tự động close các session quá end_time
+    const now = new Date();
+    for (const session of sessions) {
+      if (
+        session.status === SessionStatus.ACTIVE &&
+        session.end_time &&
+        now > new Date(session.end_time)
+      ) {
+        session.status = SessionStatus.CLOSED;
+        await this.sessionRepo.save(session);
+      }
+    }
+
     return { data: sessions.map((s) => this.toResponseDto(s)), total };
   }
 
@@ -116,6 +129,19 @@ export class SessionsService {
 
     const [sessions, total] = await qb.getManyAndCount();
 
+    // tự động close các session quá end_time
+    const now = new Date();
+    for (const session of sessions) {
+      if (
+        session.status === SessionStatus.ACTIVE &&
+        session.end_time &&
+        now > new Date(session.end_time)
+      ) {
+        session.status = SessionStatus.CLOSED;
+        await this.sessionRepo.save(session);
+      }
+    }
+
     return { data: sessions.map((s) => this.toResponseDto(s)), total };
   }
 
@@ -128,6 +154,16 @@ export class SessionsService {
 
   async findOne(id: number, student_id?: number): Promise<SessionResponseDto> {
     const session = await this.findEntity(id);
+
+    // tự động close nếu quá end_time
+    if (
+      session.status === SessionStatus.ACTIVE &&
+      session.end_time &&
+      new Date() > new Date(session.end_time)
+    ) {
+      session.status = SessionStatus.CLOSED;
+      await this.sessionRepo.save(session);
+    }
 
     if (student_id) {
       const enrolled = await this.sessionStudentRepo.findOne({

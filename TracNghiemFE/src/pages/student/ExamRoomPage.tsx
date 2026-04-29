@@ -43,10 +43,25 @@ const ExamRoomPage = () => {
   }, []);
 
   const handleStart = async (sessionId: number) => {
-    if (!confirm("Bạn có chắc muốn bắt đầu làm bài? Thời gian sẽ bắt đầu tính ngay.")) return;
     setStartingId(sessionId);
     setError("");
     try {
+      // Kiểm tra đã có attempt chưa
+      try {
+        const existing = await getMyAttempt(sessionId);
+        if (existing.data.status === "in_progress") {
+          navigate(`/student/attempt/${existing.data.id}`);
+          return;
+        }
+        if (existing.data.status === "submitted") {
+          navigate(`/student/result/${existing.data.id}`);
+          return;
+        }
+      } catch {
+        // Chưa có attempt -> tạo mới
+      }
+
+      if (!confirm("Bạn có chắc muốn bắt đầu làm bài? Thời gian sẽ bắt đầu tính ngay.")) return;
       const attempt = await startAttempt(sessionId);
       navigate(`/student/attempt/${attempt.data.id}`);
     } catch (err: any) {

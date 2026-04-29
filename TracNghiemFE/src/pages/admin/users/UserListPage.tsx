@@ -287,7 +287,7 @@ const UserListPage = () => {
             />
 
             {/* Role select */}
-            {/* <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
               <label htmlFor="role" className="text-sm font-medium text-neutral-700">
                 Vai trò <span className="ml-1 text-black">*</span>
               </label>
@@ -301,7 +301,7 @@ const UserListPage = () => {
                 <option value="TEACHER">Giáo viên</option>
                 <option value="ADMIN">Quản trị viên</option>
               </select>
-            </div> */}
+            </div>
 
             {formError && <p className="text-sm text-red-500">{formError}</p>}
 
