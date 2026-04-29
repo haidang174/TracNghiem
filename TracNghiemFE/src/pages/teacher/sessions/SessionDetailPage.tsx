@@ -130,8 +130,8 @@ const SessionDetailPage = () => {
           {[
             { label: "Học sinh", value: stats.total_students },
             { label: "Đã nộp bài", value: stats.submitted_count },
-            { label: "Điểm TB", value: stats.avg_score.toFixed(1) },
-            { label: "Điểm cao nhất", value: stats.highest_score.toFixed(1) }
+            { label: "Điểm TB", value: (stats.avg_score ?? 0).toFixed(1) },
+            { label: "Điểm cao nhất", value: (stats.highest_score ?? 0).toFixed(1) }
           ].map(item => (
             <div key={item.label} className="bg-white border border-neutral-200 rounded-xl p-4">
               <p className="text-xs text-neutral-400 mb-1">{item.label}</p>
@@ -209,7 +209,7 @@ const SessionDetailPage = () => {
                       <p className="text-xs text-neutral-400">{r.username}</p>
                     </td>
                     <td className="px-6 py-3">
-                      <span className={`font-bold text-base ${r.score >= 5 ? "text-green-600" : "text-red-500"}`}>{r.score.toFixed(1)}</span>
+                      <span className={`font-bold text-base ${r.score >= 5 ? "text-green-600" : "text-red-500"}`}>{(r.score ?? 0).toFixed(1)}</span>
                     </td>
                     <td className="px-6 py-3 text-neutral-600">
                       {r.correct_count} / {r.total_count}
@@ -239,15 +239,15 @@ const SessionDetailPage = () => {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex flex-col gap-1">
                     <span className="text-neutral-400">Điểm thấp nhất</span>
-                    <span className="font-medium text-black">{stats.lowest_score.toFixed(1)}</span>
+                    <span className="font-medium text-black">{(stats.lowest_score ?? 0).toFixed(1)}</span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-neutral-400">Điểm cao nhất</span>
-                    <span className="font-medium text-black">{stats.highest_score.toFixed(1)}</span>
+                    <span className="font-medium text-black">{(stats.highest_score ?? 0).toFixed(1)}</span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-neutral-400">Điểm trung bình</span>
-                    <span className="font-medium text-black">{stats.avg_score.toFixed(1)}</span>
+                    <span className="font-medium text-black">{(stats.avg_score ?? 0).toFixed(1)}</span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-neutral-400">Tỉ lệ nộp bài</span>
